@@ -1,5 +1,10 @@
 import { OpenApiGeneratorV3, OpenAPIRegistry } from '@asteasolutions/zod-to-openapi'
 import config from '../config'
+import {
+  verify2FAErrorSchema,
+  verify2FAResponseSchema,
+  verify2FASchema,
+} from '../schemas/auth/2faSchema'
 import { loginResponseSchema, loginSchema } from '../schemas/auth/loginSchema'
 import { registerResponseSchema, registerSchema } from '../schemas/auth/registerSchema'
 
@@ -106,6 +111,56 @@ registry.registerPath({
     },
     401: {
       description: 'Invalid credentials',
+    },
+  },
+})
+
+// New 2FA Verification endpoint
+registry.registerPath({
+  method: 'post',
+  path: '/api/auth/verify-2fa',
+  tags: [API_TAGS.AUTH],
+  description: 'Verify 2FA code and get access tokens',
+  request: {
+    body: {
+      required: true,
+      content: {
+        'application/json': {
+          schema: registry.register('Verify2FARequest', verify2FASchema),
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: '2FA verified and tokens issued',
+      content: {
+        'application/json': {
+          schema: registry.register('Verify2FAResponse', verify2FAResponseSchema),
+        },
+      },
+    },
+    400: {
+      description: 'Validation error',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              message: { type: 'string', example: 'Validation failed' },
+              errors: { type: 'array' },
+            },
+          },
+        },
+      },
+    },
+    401: {
+      description: 'Invalid or expired 2FA code',
+      content: {
+        'application/json': {
+          schema: registry.register('Verify2FAError', verify2FAErrorSchema),
+        },
+      },
     },
   },
 })

@@ -1,6 +1,12 @@
 import { NextFunction, Request, RequestHandler, Response } from 'express'
 import User from '../models/User'
-import { generateVerificationCode, sendVerificationCode, storeCode } from '../services/authService'
+import {
+  generateVerificationCode,
+  sendVerificationCode,
+  storeCode,
+  verifyCode,
+} from '../services/authService'
+import { signAccessToken } from '../utils/jwt'
 
 export const register: RequestHandler = async (
   req: Request,
@@ -42,4 +48,20 @@ export const login: RequestHandler = async (req: Request, res: Response, next: N
   } catch (error) {
     next(error)
   }
+}
+
+export const verify2FA: RequestHandler = async (req: Request, res: Response) => {
+  const { userId, code } = req.body
+
+  const isValid = await verifyCode(userId, code)
+
+  if (!isValid) {
+    res.status(401).json({ message: 'Invalid or expired 2FA code' })
+    return
+  }
+
+  // Issue token
+  const accessToken = signAccessToken({ userId })
+
+  res.status(200).json({ accessToken, message: '2FA verified' })
 }
