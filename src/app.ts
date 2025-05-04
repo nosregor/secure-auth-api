@@ -1,14 +1,14 @@
-import express from 'express'
-import pinoHttp from 'pino-http'
-import logger from './utils/logger'
-import exampleRoutes from './routes/example'
-import healthRoutes from './routes/healthz'
-import { AppError } from './utils/errors'
-import { errorHandler } from './middlewares/errorHandler'
-import helmet from 'helmet'
 import cors from 'cors'
+import express from 'express'
+import helmet from 'helmet'
+import pinoHttp from 'pino-http'
 import swaggerUi from 'swagger-ui-express'
 import { openApiDocument } from './docs/openapi'
+import { errorHandler } from './middlewares/errorHandler'
+import authRoutes from './routes/authRoute'
+import healthRoutes from './routes/healthz'
+import { AppError } from './utils/errors'
+import logger from './utils/logger'
 
 const app = express()
 
@@ -24,8 +24,7 @@ app.use(pinoHttp({ logger, autoLogging: true }))
 // Routes
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiDocument))
 app.use('/healthz', healthRoutes)
-app.use('/api', exampleRoutes)
-
+app.use('/api/auth', authRoutes)
 // Unhandled routes
 app.all('*', (req, res, next) => {
   next(new AppError(`This path ${req.originalUrl} isn't on this server!`, 404))

@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction, RequestHandler } from 'express'
+import { NextFunction, Request, RequestHandler, Response } from 'express'
 import { AnyZodObject, z } from 'zod'
 
-export const validate =
+export const validateSchema =
   (schema: AnyZodObject): RequestHandler =>
   async (req: Request, res: Response, next: NextFunction) => {
     console.log('Validating request body...')

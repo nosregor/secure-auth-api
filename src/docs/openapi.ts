@@ -1,6 +1,12 @@
 import { OpenApiGeneratorV3, OpenAPIRegistry } from '@asteasolutions/zod-to-openapi'
-import { userSchema } from '../schemas/userSchema'
 import config from '../config'
+import { registerResponseSchema, registerSchema } from '../schemas/auth/registerSchema'
+
+const API_TAGS = {
+  AUTH: 'Authentication',
+  USER: 'User',
+  SYSTEM: 'System',
+}
 
 export const registry = new OpenAPIRegistry()
 
@@ -8,6 +14,7 @@ export const registry = new OpenAPIRegistry()
 registry.registerPath({
   method: 'get',
   path: '/healthz',
+  tags: [API_TAGS.SYSTEM],
   description: 'Get health status',
   responses: {
     200: {
@@ -38,30 +45,33 @@ registry.registerPath({
   },
 })
 
+// Register /api/auth/register
 registry.registerPath({
   method: 'post',
-  path: '/body-params',
-  description: 'Create a new user',
+  path: '/api/auth/register',
+  tags: [API_TAGS.AUTH],
+  description: 'Register a new user',
   request: {
     body: {
+      required: true,
       content: {
         'application/json': {
-          schema: userSchema,
+          schema: registry.register('RegisterRequest', registerSchema),
         },
       },
     },
   },
   responses: {
-    200: {
-      description: 'Successful response',
+    201: {
+      description: 'User registered successfully',
       content: {
         'application/json': {
-          schema: userSchema,
+          schema: registry.register('RegisterResponse', registerResponseSchema),
         },
       },
     },
     400: {
-      description: 'Validation error',
+      description: 'Email or mobile already in use',
     },
   },
 })
@@ -72,7 +82,22 @@ export const openApiDocument = new OpenApiGeneratorV3(registry.definitions).gene
   info: {
     version: '1.0.0',
     title: 'API',
-    description: 'Simple REST API with TypeScript and Express',
+    description: 'Secure API with 2FA Authentication',
   },
   servers: [{ url: `http://localhost:${config.port}` }],
+  tags: [
+    {
+      name: API_TAGS.SYSTEM,
+      description: 'System health and status',
+    },
+    {
+      name: API_TAGS.AUTH,
+      description: 'Authentication endpoints (login, register, 2FA)',
+    },
+
+    {
+      name: API_TAGS.USER,
+      description: 'User management endpoints (profile, password change)',
+    },
+  ],
 })
