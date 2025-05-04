@@ -12,6 +12,13 @@ export const changePasswordRequestSchema = z
   .strict()
   .openapi('ChangePasswordRequest')
 
+export const requestPasswordChangeSchema = z
+  .object({
+    // validate empty object
+  })
+  .strict()
+  .openapi('RequestPasswordChangeRequest')
+
 export const requestPasswordChangeResponseSchema = z.object({
   message: z.string(),
   code: z.string().min(4),

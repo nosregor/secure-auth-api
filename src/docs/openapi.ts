@@ -11,6 +11,7 @@ import {
   changePasswordRequestSchema,
   changePasswordResponseSchema,
   requestPasswordChangeResponseSchema,
+  requestPasswordChangeSchema,
 } from '../schemas/user/changePasswordSchema'
 import {
   updateProfileResponseSchema,
@@ -218,6 +219,15 @@ registry.registerPath({
   description: 'Sends a 2FA code via SMS to allow password reset',
   tags: [API_TAGS.USER],
   security: [{ bearerAuth: [] }],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: requestPasswordChangeSchema,
+        },
+      },
+    },
+  },
   responses: {
     200: {
       description: 'Verification code sent successfully',
