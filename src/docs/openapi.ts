@@ -6,6 +6,11 @@ import {
   verify2FASchema,
 } from '../schemas/auth/2faSchema'
 import { loginResponseSchema, loginSchema } from '../schemas/auth/loginSchema'
+import {
+  invalidTokenErrorSchema,
+  missingTokenErrorSchema,
+  refreshTokenResponseSchema,
+} from '../schemas/auth/refreshTokenSchema'
 import { registerResponseSchema, registerSchema } from '../schemas/auth/registerSchema'
 import {
   changePasswordRequestSchema,
@@ -275,6 +280,40 @@ registry.registerPath({
     },
     401: {
       description: 'Unauthorized or invalid verification code',
+    },
+  },
+})
+
+registry.registerPath({
+  method: 'post',
+  path: '/api/auth//refresh-token',
+  tags: ['Authentication'],
+  description: 'Refresh access token using refresh token cookie',
+  security: [], // No auth needed for this endpoint
+  responses: {
+    200: {
+      description: 'New access token generated',
+      content: {
+        'application/json': {
+          schema: refreshTokenResponseSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Missing refresh token',
+      content: {
+        'application/json': {
+          schema: missingTokenErrorSchema,
+        },
+      },
+    },
+    403: {
+      description: 'Invalid or expired refresh token',
+      content: {
+        'application/json': {
+          schema: invalidTokenErrorSchema,
+        },
+      },
     },
   },
 })

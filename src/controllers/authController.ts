@@ -6,7 +6,8 @@ import {
   storeCode,
   verifyCode,
 } from '../services/authService'
-import { signAccessToken } from '../utils/jwt'
+import { setRefreshTokenCookie } from '../utils/auth'
+import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../utils/jwt'
 
 export const register: RequestHandler = async (
   req: Request,
@@ -64,8 +65,40 @@ export const verify2FA: RequestHandler = async (req: Request, res: Response) => 
     return
   }
 
-  // Issue token
+  // Issue tokens
   const accessToken = signAccessToken({ userId })
+  const refreshToken = signRefreshToken({ userId })
 
-  res.status(200).json({ accessToken, message: '2FA verified' })
+  // Set refresh token in HttpOnly cookie
+  setRefreshTokenCookie(res, refreshToken)
+
+  res.status(200).json({ accessToken, refreshToken, message: '2FA verified' })
+}
+
+export const refreshAccessToken = async (req: Request, res: Response, next: NextFunction) => {
+  const { refreshToken } = req.cookies
+
+  console.log({ refreshToken })
+
+  if (!refreshToken) {
+    res.status(401).json({ message: 'Missing refresh token' })
+    return
+  }
+
+  try {
+    const decoded = verifyRefreshToken(refreshToken) as { userId: string }
+    if (!decoded?.userId) {
+      res.status(403).json({ message: 'Invalid refresh token' })
+      return
+    }
+    const newAccessToken = signAccessToken({ userId: decoded.userId })
+    const newRefreshToken = signRefreshToken({ userId: decoded.userId })
+
+    setRefreshTokenCookie(res, newRefreshToken)
+
+    res.status(200).json({ accessToken: newAccessToken })
+  } catch (error) {
+    res.status(403).json({ message: 'Invalid refresh token' })
+    next(error)
+  }
 }
