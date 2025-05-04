@@ -7,6 +7,15 @@ import {
 } from '../schemas/auth/2faSchema'
 import { loginResponseSchema, loginSchema } from '../schemas/auth/loginSchema'
 import { registerResponseSchema, registerSchema } from '../schemas/auth/registerSchema'
+import {
+  changePasswordRequestSchema,
+  changePasswordResponseSchema,
+  requestPasswordChangeResponseSchema,
+} from '../schemas/user/changePasswordSchema'
+import {
+  updateProfileResponseSchema,
+  updateProfileSchema,
+} from '../schemas/user/updateProfileSchema'
 
 const API_TAGS = {
   AUTH: 'Authentication',
@@ -161,6 +170,101 @@ registry.registerPath({
           schema: registry.register('Verify2FAError', verify2FAErrorSchema),
         },
       },
+    },
+  },
+})
+
+// Update profile
+registry.registerPath({
+  method: 'patch',
+  path: '/api/users/profile',
+  description: 'Update user profile (name, email only)',
+  summary: 'Update profile',
+  tags: [API_TAGS.USER],
+  security: [{ bearerAuth: [] }],
+  request: {
+    body: {
+      required: true,
+      content: {
+        'application/json': {
+          schema: updateProfileSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Profile updated successfully',
+      content: {
+        'application/json': {
+          schema: updateProfileResponseSchema,
+        },
+      },
+    },
+    400: {
+      description: 'Invalid update (e.g., attempting to change mobile)',
+    },
+    401: {
+      description: 'Unauthorized',
+    },
+  },
+})
+
+// Request password change
+registry.registerPath({
+  method: 'post',
+  path: '/api/users/request-password-change',
+  summary: 'Request password change via SMS verification code',
+  description: 'Sends a 2FA code via SMS to allow password reset',
+  tags: [API_TAGS.USER],
+  security: [{ bearerAuth: [] }],
+  responses: {
+    200: {
+      description: 'Verification code sent successfully',
+      content: {
+        'application/json': {
+          schema: requestPasswordChangeResponseSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized - user not authenticated',
+    },
+    404: {
+      description: 'User not found',
+    },
+  },
+})
+
+// Change password after verifying code
+registry.registerPath({
+  method: 'post',
+  path: '/api/users/change-password',
+  summary: 'Change user password after verifying code',
+  description:
+    'Allows an authenticated user to change their password after entering a valid SMS verification code',
+  tags: [API_TAGS.USER],
+  security: [{ bearerAuth: [] }],
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: changePasswordRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Password changed successfully',
+      content: {
+        'application/json': {
+          schema: changePasswordResponseSchema,
+        },
+      },
+    },
+    401: {
+      description: 'Unauthorized or invalid verification code',
     },
   },
 })

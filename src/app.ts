@@ -7,6 +7,7 @@ import { openApiDocument } from './docs/openapi'
 import { errorHandler } from './middlewares/errorHandler'
 import authRoutes from './routes/authRoute'
 import healthRoutes from './routes/healthz'
+import userRoutes from './routes/userRoute'
 import { AppError } from './utils/errors'
 import logger from './utils/logger'
 
@@ -25,6 +26,8 @@ app.use(pinoHttp({ logger, autoLogging: true }))
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiDocument))
 app.use('/healthz', healthRoutes)
 app.use('/api/auth', authRoutes)
+app.use('/api/users', userRoutes)
+
 // Unhandled routes
 app.all('*', (req, res, next) => {
   next(new AppError(`This path ${req.originalUrl} isn't on this server!`, 404))

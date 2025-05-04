@@ -4,6 +4,12 @@ import { z } from 'zod'
 extendZodWithOpenApi(z)
 
 // Common reusable field definitions
+export const nameSchema = z
+  .string({
+    required_error: 'Name is required',
+  })
+  .min(2)
+
 export const emailSchema = z
   .string({
     required_error: 'Email is required',
