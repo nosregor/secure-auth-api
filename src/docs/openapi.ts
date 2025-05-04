@@ -1,5 +1,6 @@
 import { OpenApiGeneratorV3, OpenAPIRegistry } from '@asteasolutions/zod-to-openapi'
 import config from '../config'
+import { loginResponseSchema, loginSchema } from '../schemas/auth/loginSchema'
 import { registerResponseSchema, registerSchema } from '../schemas/auth/registerSchema'
 
 const API_TAGS = {
@@ -50,6 +51,7 @@ registry.registerPath({
   method: 'post',
   path: '/api/auth/register',
   tags: [API_TAGS.AUTH],
+  summary: 'User registration',
   description: 'Register a new user',
   request: {
     body: {
@@ -72,6 +74,38 @@ registry.registerPath({
     },
     400: {
       description: 'Email or mobile already in use',
+    },
+  },
+})
+
+// Register /api/auth/login
+registry.registerPath({
+  method: 'post',
+  path: '/api/auth/login',
+  tags: [API_TAGS.AUTH],
+  summary: 'User login',
+  description: 'Login and receive 2FA code',
+  request: {
+    body: {
+      required: true,
+      content: {
+        'application/json': {
+          schema: registry.register('LoginRequest', loginSchema),
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: 'Verification code sent',
+      content: {
+        'application/json': {
+          schema: registry.register('LoginResponse', loginResponseSchema),
+        },
+      },
+    },
+    401: {
+      description: 'Invalid credentials',
     },
   },
 })

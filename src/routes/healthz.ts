@@ -1,5 +1,4 @@
-import { Router } from 'express'
-import { Request, Response } from 'express'
+import { Request, Response, Router } from 'express'
 
 const router = Router()
 

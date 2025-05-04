@@ -11,7 +11,8 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "skipLibCheck": true
   },
   "include": ["./src/**/*.ts"],
   "exclude": ["./coverage", "node_modules", "./dist", "__tests__", "jest.config.js"]

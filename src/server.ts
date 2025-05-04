@@ -1,5 +1,6 @@
 import app from './app'
 import { connectDB, disconnectDB } from './lib/mongo'
+import { connectRedis, disconnectRedis } from './lib/redis'
 import logger from './utils/logger'
 
 const PORT = process.env.PORT || 3000
@@ -7,6 +8,7 @@ const PORT = process.env.PORT || 3000
 async function startServer() {
   try {
     await connectDB()
+    await connectRedis()
 
     const server = app.listen(PORT, () => {
       logger.info(`⚡️[server]: Server is running at http://localhost:${PORT}`)
@@ -15,9 +17,11 @@ async function startServer() {
     const shutdown = async () => {
       logger.info('Shutting down server...')
       server.close(async () => {
-        await disconnectDB()
-
-        logger.info('Server and database connections closed.')
+        await Promise.all([
+          disconnectDB(),
+          disconnectRedis(), // Graceful Redis shutdown
+        ])
+        logger.info('Server and all database connections closed.')
         process.exit(0)
       })
     }
