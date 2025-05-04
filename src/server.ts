@@ -1,10 +1,13 @@
 import app from './app'
+import { connectDB, disconnectDB } from './lib/mongo'
 import logger from './utils/logger'
 
 const PORT = process.env.PORT || 3000
 
 async function startServer() {
   try {
+    await connectDB()
+
     const server = app.listen(PORT, () => {
       logger.info(`⚡️[server]: Server is running at http://localhost:${PORT}`)
     })
@@ -12,7 +15,9 @@ async function startServer() {
     const shutdown = async () => {
       logger.info('Shutting down server...')
       server.close(async () => {
-        logger.info('Server connection closed.')
+        await disconnectDB()
+
+        logger.info('Server and database connections closed.')
         process.exit(0)
       })
     }

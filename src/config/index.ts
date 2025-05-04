@@ -7,11 +7,11 @@ interface IConfig {
   name: string
   port: string | number
   database: {
-    POSTGRES_URL: string
-    MONGO_URI: string
+    MONGO_URL: string
     REDIS_URL: string
   }
-  secret: string
+  secret: { JWT_SECRET: string; REFRESH_SECRET: string }
+  twilio: { TWILIO_SID: string; TWILIO_TOKEN: string; TWILIO_PHONE: string }
 }
 
 function getStringEnv(variable: string, defaultValue?: string): string {
@@ -29,24 +29,32 @@ function getStringEnv(variable: string, defaultValue?: string): string {
 const NODE_ENV: string = getStringEnv('NODE_ENV', 'development')
 const APP_NAME: string = getStringEnv('APP_NAME', 'app name')
 const PORT: string | number = getStringEnv('PORT', '3000')
-const SECRET = getStringEnv('SECRET', 'TOP_SECRET')
-const POSTGRES_URL = getStringEnv(
-  'POSTGRES_URL',
-  'postgresql://postgres:password@postgres:5432/feebee',
-)
-const MONGO_URI = getStringEnv('MONGO_URI', 'mongodb://localhost:27017/test')
+const JWT_SECRET = getStringEnv('JWT_SECRET', 'JWT_SECRET')
+const REFRESH_SECRET = getStringEnv('REFRESH_SECRET', 'REFRESH_SECRET')
+
+const MONGO_URL = getStringEnv('MONGO_URL', 'mongodb://localhost:27017/test')
 const REDIS_URL = getStringEnv('REDIS_URL', 'redis://localhost:6379')
+const TWILIO_SID = getStringEnv('TWILIO_SID', 'sid')
+const TWILIO_TOKEN = getStringEnv('TWILIO_TOKEN', 'token')
+const TWILIO_PHONE = getStringEnv('TWILIO_PHONE', 'phone')
 
 const test: IConfig = {
   node_env: NODE_ENV,
   name: APP_NAME,
   port: PORT,
   database: {
-    POSTGRES_URL: POSTGRES_URL,
-    MONGO_URI: MONGO_URI,
+    MONGO_URL: MONGO_URL,
     REDIS_URL: REDIS_URL,
   },
-  secret: SECRET,
+  secret: {
+    JWT_SECRET: JWT_SECRET,
+    REFRESH_SECRET: REFRESH_SECRET,
+  },
+  twilio: {
+    TWILIO_SID: TWILIO_SID,
+    TWILIO_TOKEN: TWILIO_TOKEN,
+    TWILIO_PHONE: TWILIO_PHONE,
+  },
 }
 
 const development: IConfig = {
@@ -54,11 +62,18 @@ const development: IConfig = {
   name: APP_NAME,
   port: PORT,
   database: {
-    POSTGRES_URL: POSTGRES_URL,
-    MONGO_URI: MONGO_URI,
+    MONGO_URL: MONGO_URL,
     REDIS_URL: REDIS_URL,
   },
-  secret: SECRET,
+  secret: {
+    JWT_SECRET: JWT_SECRET,
+    REFRESH_SECRET: REFRESH_SECRET,
+  },
+  twilio: {
+    TWILIO_SID: TWILIO_SID,
+    TWILIO_TOKEN: TWILIO_TOKEN,
+    TWILIO_PHONE: TWILIO_PHONE,
+  },
 }
 
 const production: IConfig = {
@@ -66,11 +81,18 @@ const production: IConfig = {
   name: APP_NAME,
   port: PORT,
   database: {
-    POSTGRES_URL: POSTGRES_URL,
-    MONGO_URI: MONGO_URI,
+    MONGO_URL: MONGO_URL,
     REDIS_URL: REDIS_URL,
   },
-  secret: SECRET,
+  secret: {
+    JWT_SECRET: JWT_SECRET,
+    REFRESH_SECRET: REFRESH_SECRET,
+  },
+  twilio: {
+    TWILIO_SID: TWILIO_SID,
+    TWILIO_TOKEN: TWILIO_TOKEN,
+    TWILIO_PHONE: TWILIO_PHONE,
+  },
 }
 
 const config: {
