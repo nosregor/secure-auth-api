@@ -51,7 +51,7 @@ registry.registerPath({
   },
 })
 
-// Register /api/auth/register
+// Register
 registry.registerPath({
   method: 'post',
   path: '/api/auth/register',
@@ -83,7 +83,7 @@ registry.registerPath({
   },
 })
 
-// Register /api/auth/login
+// Register
 registry.registerPath({
   method: 'post',
   path: '/api/auth/login',
@@ -115,7 +115,7 @@ registry.registerPath({
   },
 })
 
-// New 2FA Verification endpoint
+// 2FA Verification
 registry.registerPath({
   method: 'post',
   path: '/api/auth/verify-2fa',
