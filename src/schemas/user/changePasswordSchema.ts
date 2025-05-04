@@ -4,10 +4,13 @@ import { passwordSchema } from '../shared/baseSchema'
 
 extendZodWithOpenApi(z)
 
-export const changePasswordRequestSchema = z.object({
-  code: z.string().min(4).max(6),
-  newPassword: passwordSchema,
-})
+export const changePasswordRequestSchema = z
+  .object({
+    code: z.string().min(4).max(6),
+    newPassword: passwordSchema,
+  })
+  .strict()
+  .openapi('ChangePasswordRequest')
 
 export const requestPasswordChangeResponseSchema = z.object({
   message: z.string(),

@@ -27,6 +27,7 @@ export const verify2FASchema = z
         description: '6-digit verification code received via SMS/email',
       }),
   })
+  .strict()
   .openapi('Verify2FA')
 
 // Response Schema

@@ -16,7 +16,11 @@ export const register: RequestHandler = async (
   try {
     const { name, email, mobile, password } = req.body
 
-    const existingUser = await User.findOne({ $or: [{ email }, { mobile }] })
+    const existingUser = await User.findOne(
+      { $or: [{ email }, { mobile }] },
+      { password: 0, __v: 0 }, // Exclude sensitive fields
+    )
+
     if (existingUser) {
       res.status(400).json({ message: 'Email or mobile already in use' })
       return

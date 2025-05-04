@@ -66,14 +66,3 @@ export const changePassword: RequestHandler = async (req: Request, res: Response
 
   res.status(200).json({ message: 'Password updated successfully' })
 }
-
-export const logout = (req: Request, res: Response) => {
-  res.clearCookie('refreshToken', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    path: '/',
-  })
-
-  res.status(200).json({ message: 'Logged out successfully' })
-}

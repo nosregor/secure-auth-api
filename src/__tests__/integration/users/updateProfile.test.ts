@@ -37,7 +37,15 @@ describe('PUT /api/users/profile', () => {
       .send({ mobile: '+1987654321' })
 
     expect(res.status).toBe(400)
-    expect(res.body.message).toBe('Cannot update mobile number')
+    expect(res.body.message).toBe('Validation failed')
+    const expectedError = {
+      path: '',
+      message: expect.stringContaining(`Only 'name' and 'email' can be updated.`),
+    }
+
+    expect(res.body.errors).toEqual(
+      expect.arrayContaining([expect.objectContaining(expectedError)]),
+    )
   })
 
   it('successfully updates profile', async () => {

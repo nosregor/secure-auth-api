@@ -42,11 +42,11 @@ describe('POST /api/users/change-password', () => {
     const res = await request(app)
       .post(endpoint)
       .set('Authorization', `Bearer ${token}`)
-      .send({ code: 'wrong-code', newPassword: mockPassword })
+      .send({ code: '999999', newPassword: mockPassword })
 
     expect(res.status).toBe(401)
     expect(res.body.message).toBe('Invalid or expired code')
-    expect(verifyCode).toHaveBeenCalledWith(userId, 'wrong-code')
+    expect(verifyCode).toHaveBeenCalledWith(userId, '999999')
   })
 
   it('should update password when code is valid', async () => {

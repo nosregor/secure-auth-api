@@ -11,6 +11,7 @@ export const registerSchema = z
     password: passwordSchema,
     mobile: mobileSchema,
   })
+  .strict()
   .openapi('User')
 
 export const registerResponseSchema = z

@@ -12,6 +12,7 @@ export const loginSchema = z
       })
       .min(1, 'Password is required'),
   })
+  .strict()
   .openapi('Login')
 
 export const loginResponseSchema = z
