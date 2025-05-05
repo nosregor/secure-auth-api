@@ -3,7 +3,7 @@ import config from '../config'
 import { redisClient } from '../lib/redis'
 
 // TODO: move to config
-const CODE_TTL = 1000 * 60 * 5 // 5 minutes
+const CODE_TTL = 1000 * 60 * 5 // 5 minutes expiry
 
 export const generateVerificationCode = (): string => {
   return Math.floor(100000 + Math.random() * 900000).toString() // "123456"
