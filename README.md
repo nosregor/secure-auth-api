@@ -131,7 +131,7 @@ Not yet production-ready. Here's what's missing and suggested next steps:
 | ------------------------ | ------------------------------------------------------- |
 | **SMS interception**     | 2FA codes expire quickly; add email fallback in prod    |
 | **Brute-force login**    | Rate limiting (planned); consider CAPTCHA or throttling |
-| **Session hijacking**    | Short-lived JWTs; refresh tokens can be added           |
+| **Session hijacking**    | Short-lived JWTs; refresh tokens; token bindings        |
 | **Replay attacks**       | Time-bound Redis codes, single-use                      |
 | **Mobile number change** | Not allowed to prevent account takeovers                |
 | **Tampered input**       | Strong Zod validation across all routes                 |
