@@ -6,6 +6,7 @@ interface JwtPayload {
   sub?: string // subject, e.g. userId
   email?: string
   role?: 'user' | 'admin'
+  fingerprint: string // Based on IP/UA
 }
 
 // TODO: accessTokenTtl and refreshTokenTtl should be in config
