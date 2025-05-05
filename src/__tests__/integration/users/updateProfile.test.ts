@@ -20,7 +20,7 @@ describe('PUT /api/users/profile', () => {
 
   beforeEach(async () => {
     const user = await User.create(testUser)
-    authHeader = `Bearer ${signAccessToken({ userId: user._id })}`
+    authHeader = `Bearer ${signAccessToken({ userId: user._id } as any)}`
   })
 
   it('returns 401 if userId is missing (unauthenticated)', async () => {
