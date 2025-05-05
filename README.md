@@ -8,6 +8,10 @@ A secure backend authentication API built with **Express.js** and **TypeScript**
 - Password change via SMS verification
 - JWT-based access control
 
+## 🔧 Project Setup (boilerplates)
+
+This project was bootstrapped using my own starter template: [ts-starter](https://github.com/nosregor/ts-starter).
+
 ## 🚀 Setup Instructions
 
 ### Requirements
@@ -68,7 +72,7 @@ It includes:
 
 - **Modular structure**: Separation of concerns between routes, controllers, services, utils, and middlewares.
 - **Zod** for input validation and schema enforcement.
-- **JWT (short-lived)** for stateless session handling.
+- **JWT (short-lived)** for stateless session management.
 - **Refresh token rotation**: On every successful 2FA verification, a new refresh token is issued, replacing the old one. This mitigates session hijacking.
 - **Redis** for storing time-bound verification codes.
 - **Twilio** used only for sending SMS — the 2FA logic is implemented internally.
