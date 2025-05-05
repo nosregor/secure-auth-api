@@ -1,4 +1,4 @@
-import { Request, RequestHandler, Response } from 'express'
+import { NextFunction, Request, RequestHandler, Response } from 'express'
 import User from '../models/User'
 
 import {
@@ -7,62 +7,76 @@ import {
   storeCode,
   verifyCode,
 } from '../services/authService'
+import { AppError } from '../utils/errors'
 
-export const updateProfile: RequestHandler = async (req: Request, res: Response): Promise<void> => {
-  const userId = req.user?.userId
-  if (!userId) {
-    res.status(401).json({ message: 'Unauthorized' })
-    return
+export const updateProfile: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const userId = req.user?.userId
+    if (!userId) {
+      throw new AppError('Unauthorized', 401)
+    }
+
+    const updates = req.body
+    if ('mobile' in updates) {
+      throw new AppError('Cannot update mobile number', 400)
+    }
+
+    await User.findByIdAndUpdate(userId, { $set: updates })
+    res.status(200).json({ message: 'Profile updated successfully' })
+  } catch (error) {
+    next(error)
   }
-
-  const updates = req.body
-  if ('mobile' in updates) {
-    res.status(400).json({ message: 'Cannot update mobile number' })
-    return
-  }
-
-  await User.findByIdAndUpdate(userId, { $set: updates })
-  res.status(200).json({ message: 'Profile updated successfully' })
 }
 
 export const requestPasswordChange: RequestHandler = async (
   req: Request,
   res: Response,
+  next: NextFunction,
 ): Promise<void> => {
-  const userId = req.user?.userId
-  if (!userId) {
-    res.status(401).json({ message: 'Unauthorized' })
-    return
+  try {
+    const userId = req.user?.userId
+    if (!userId) {
+      throw new AppError('Unauthorized', 401)
+    }
+    const user = await User.findById(userId)
+    if (!user) {
+      throw new AppError('User not found', 404)
+    }
+
+    const code = generateVerificationCode()
+    await storeCode(user.id, code)
+    await sendVerificationCode(user.mobile, code)
+
+    res.status(200).json({ message: 'Verification code sent', code })
+  } catch (error) {
+    next(error)
   }
-  const user = await User.findById(userId)
-
-  if (!user) {
-    res.status(404).json({ message: 'User not found' })
-    return
-  }
-
-  const code = generateVerificationCode()
-  await storeCode(user.id, code)
-  await sendVerificationCode(user.mobile, code)
-
-  res.status(200).json({ message: 'Verification code sent', code })
 }
 
-export const changePassword: RequestHandler = async (req: Request, res: Response) => {
-  const userId = req.user?.userId
-  if (!userId) {
-    res.status(401).json({ message: 'Unauthorized' })
-    return
+export const changePassword: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const userId = req.user?.userId
+    if (!userId) {
+      throw new AppError('Unauthorized', 401)
+    }
+    const { code, newPassword } = req.body
+
+    const isValid = await verifyCode(userId, code)
+    if (!isValid) {
+      throw new AppError('Invalid or expired code', 401)
+    }
+
+    await User.findByIdAndUpdate(userId, { password: newPassword })
+    res.status(200).json({ message: 'Password updated successfully' })
+  } catch (error) {
+    next(error)
   }
-  const { code, newPassword } = req.body
-
-  const isValid = await verifyCode(userId, code)
-  if (!isValid) {
-    res.status(401).json({ message: 'Invalid or expired code' })
-    return
-  }
-
-  await User.findByIdAndUpdate(userId, { password: newPassword })
-
-  res.status(200).json({ message: 'Password updated successfully' })
 }

@@ -1,13 +1,16 @@
+import config from '../config'
+
 export class AppError extends Error {
-  constructor(
-    public message: string,
-    public statusCode: number = 500,
-    public errors?: unknown,
-  ) {
+  public statusCode: number
+  public errors?: unknown
+  public stack?: string
+
+  constructor(message: string, statusCode: number = 500, errors?: unknown, stack?: string) {
     super(message)
     this.statusCode = statusCode
-    this.name = this.constructor.name
     this.errors = errors
+    this.stack = stack || (config.node_env === 'development' ? new Error().stack : undefined)
+    this.name = this.constructor.name
     Error.captureStackTrace(this, this.constructor)
   }
 }

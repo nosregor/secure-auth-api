@@ -1,6 +1,7 @@
 import { NextFunction, Request, RequestHandler, Response } from 'express'
 import { AnyZodObject, z } from 'zod'
 import config from '../config'
+import { AppError } from '../utils/errors'
 
 export const validateCookies =
   (schema: AnyZodObject): RequestHandler =>
@@ -17,14 +18,16 @@ export const validateCookies =
           sameSite: 'strict',
         })
 
-        res.status(401).json({
-          message: 'Invalid session',
-          errors: error.errors.map(err => ({
-            path: err.path.join('.'),
-            message: err.message,
-          })),
-          code: 'INVALID_SESSION',
-        })
+        next(
+          new AppError(
+            'Invalid session',
+            401,
+            error.errors.map(err => ({
+              path: err.path.join('.'),
+              message: err.message,
+            })),
+          ),
+        )
       }
       next(error)
     }

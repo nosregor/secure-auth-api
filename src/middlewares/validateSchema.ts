@@ -23,7 +23,7 @@ export const validateSchema =
           ),
         )
       }
-      // For non-Zod errors, pass it to the error handler
+      // For non-Zod errors
       next(error)
     }
   }
