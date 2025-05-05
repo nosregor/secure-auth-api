@@ -80,13 +80,15 @@ It includes:
 
 ## 🔐 Security Considerations
 
-- ❗ **Mobile number is immutable** to prevent account takeovers
-- ✅ **2FA codes expire** (default 5 mins) and are stored securely in Redis
-- 🪪 **JWT tokens are short-lived**, and refresh tokens can be added
-- 🧼 **Zod validation** ensures type-safe and sanitized input
-- 🧱 **Middleware-protected routes** to ensure only verified users can update profile or password
-- ⏱️ Rate-limiting and brute-force protection not implemented but planned (see below) i.e. password change limiter, refresh token limiter etc.
-- Monitoring
+| Threat/Feature             | Status        | Mitigation Strategy                                                |
+| -------------------------- | ------------- | ------------------------------------------------------------------ |
+| Input validation           | ✅            | Zod validation on all user input (sanitized input)                 |
+| SMS interception           | ⚠️            | Codes expire quickly, not reusable; suggest email fallback in prod |
+| Replay attacks             | ✅            | Single-use 2FA codes, expire in Redis ((default 5 mins))           |
+| Session hijacking          | ✅            | Refresh token rotation with invalidation of old token              |
+| Brute-force login attempts | ❌            | Rate limiting planned (e.g., `express-rate-limit`)                 |
+| Mobile number change       | 🚫            | Not allowed to prevent account takeovers                           |
+| Refresh token persistence  | ✅ (optional) | Stored as HTTP-only secure cookie (optional in this challenge)     |
 
 ## 🔄 Token Strategy
 
@@ -96,7 +98,7 @@ It includes:
   - Sent in Authorization header for protected routes
 
 - Refresh Token (optional for this challenge):
-  - Stored in HTTP-only cookie (could also use Redis) and valid for 7 days
+  - Stored in HTTP-only cookie and valid for 7 days
   - Issued on 2FA success and replaced on every login to invalidate older sessions
   - Enables access token renewal without re-authenticating every time
 
@@ -107,13 +109,13 @@ Not yet production-ready. Here's what's missing and suggested next steps:
 | Area                   | Current Status | Next Step for Production                                                  |
 | ---------------------- | -------------- | ------------------------------------------------------------------------- |
 | Rate limiting          | ❌             | Use `express-rate-limit` or API Gateway                                   |
-| Session hijack defense | ⚠️             | Use refresh tokens, device fingerprinting                                 |
+| Session hijack defense | ✅             | Use refresh tokens with rotation                                          |
 | Logging                | ✅             | Pino logs structured output; can be piped to ELK                          |
 | Monitoring             | ❌             | Monitor for repeated attempts with invalid fields and suspicious requests |
-| Input sanitization     | ✅ (Zod)       | Consider additional XSS protection if needed                              |
-| Deployment             | ❌             | Use Docker + CI/CD pipeline + env-based configs                           |
-| Secrets management     | ❌             | Use Vault, AWS Secrets Manager, or `.env` via CI                          |
-| Email fallback         | ❌             | Allow 2FA via email if SMS fails                                          |
+| Input sanitization     | ✅ (Zod)       | Consider additional XSS protection if needed use `helmet`                 |
+| Deployment             | ❌             | Use Docker + CI/CD pipeline                                               |
+| Secrets management     | ❌             | Use Vault, AWS Secrets Manager, or CI-injected                            |
+| Email fallback         | ❌             | Implement fallback method for 2FA if SMS fails                            |
 
 ## 🧰 Tools & Libraries Used
 
@@ -128,17 +130,19 @@ Not yet production-ready. Here's what's missing and suggested next steps:
 | **Twilio**           | Sending SMS messages               |
 | **Jest & Supertest** | Testing framework for endpoints    |
 | **dotenv**           | Configuring environment variables  |
+| **helmet**           | ..                                 |
+| **csurf**            | /.                                 |
 
 ## 🛡️ Attack Vectors Considered
 
-| Threat                   | Mitigation                                              |
-| ------------------------ | ------------------------------------------------------- |
-| **SMS interception**     | 2FA codes expire quickly; add email fallback in prod    |
-| **Brute-force login**    | Rate limiting (planned); consider CAPTCHA or throttling |
-| **Session hijacking**    | Short-lived JWTs; refresh tokens; token bindings        |
-| **Replay attacks**       | Time-bound Redis codes, single-use                      |
-| **Mobile number change** | Not allowed to prevent account takeovers                |
-| **Tampered input**       | Strong Zod validation across all routes                 |
+| Threat                   | Mitigation                                         |
+| ------------------------ | -------------------------------------------------- |
+| **SMS interception**     | Short expiry and one-time-use codes                |
+| **Brute-force login**    | To be mitigated with rate-limiting                 |
+| **Session hijacking**    | Refresh token rotation + short-lived access tokens |
+| **Replay attacks**       | One-time 2FA codes stored in Redis                 |
+| **Mobile number change** | Not allowed to prevent account takeovers           |
+| **Input tampering**      | Enforced with Zod schema validation                |
 
 ## 🧪 How to Test
 
