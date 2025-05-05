@@ -81,7 +81,8 @@ It includes:
 - 🪪 **JWT tokens are short-lived**, and refresh tokens can be added
 - 🧼 **Zod validation** ensures type-safe and sanitized input
 - 🧱 **Middleware-protected routes** to ensure only verified users can update profile or password
-- ⏱️ Rate-limiting and brute-force protection not implemented but planned (see below) i.e. password change limit,
+- ⏱️ Rate-limiting and brute-force protection not implemented but planned (see below) i.e. password change limiter, refresh token limiter etc.
+- Monitoring
 
 ## 🔄 Token Strategy
 
@@ -99,15 +100,16 @@ It includes:
 
 Not yet production-ready. Here's what's missing and suggested next steps:
 
-| Area                   | Current Status | Next Step for Production                         |
-| ---------------------- | -------------- | ------------------------------------------------ |
-| Rate limiting          | ❌             | Use `express-rate-limit` or API Gateway          |
-| Session hijack defense | ⚠️             | Use refresh tokens, device fingerprinting        |
-| Logging & Monitoring   | ✅             | Pino logs structured output; can be piped to ELK |
-| Input sanitization     | ✅ (Zod)       | Consider additional XSS protection if needed     |
-| Deployment             | ❌             | Use Docker + CI/CD pipeline + env-based configs  |
-| Secrets management     | ❌             | Use Vault, AWS Secrets Manager, or `.env` via CI |
-| Email fallback         | ❌             | Allow 2FA via email if SMS fails                 |
+| Area                   | Current Status | Next Step for Production                                                  |
+| ---------------------- | -------------- | ------------------------------------------------------------------------- |
+| Rate limiting          | ❌             | Use `express-rate-limit` or API Gateway                                   |
+| Session hijack defense | ⚠️             | Use refresh tokens, device fingerprinting                                 |
+| Logging                | ✅             | Pino logs structured output; can be piped to ELK                          |
+| Monitoring             | ❌             | Monitor for repeated attempts with invalid fields and suspicious requests |
+| Input sanitization     | ✅ (Zod)       | Consider additional XSS protection if needed                              |
+| Deployment             | ❌             | Use Docker + CI/CD pipeline + env-based configs                           |
+| Secrets management     | ❌             | Use Vault, AWS Secrets Manager, or `.env` via CI                          |
+| Email fallback         | ❌             | Allow 2FA via email if SMS fails                                          |
 
 ## 🧰 Tools & Libraries Used
 
