@@ -38,18 +38,18 @@ describe('POST /api/auth/register', () => {
       const invalidPayload = { ...validPayload }
       delete invalidPayload[field]
 
-      await request(app)
-        .post('/api/auth/register')
-        .send(invalidPayload)
-        .expect(400)
-        .then(res => {
-          expect(res.body.errors).toContainEqual(
-            expect.objectContaining({
-              path: field,
-              message: expect.stringContaining('required'),
-            }),
-          )
-        })
+      const res = await request(app).post('/api/auth/register').send(invalidPayload)
+      expect(res.status).toBe(400)
+      expect(res.body).toMatchObject({
+        status: 'error',
+        message: 'Validation failed',
+        errors: expect.arrayContaining([
+          expect.objectContaining({
+            path: field,
+            message: expect.stringMatching(/required/i),
+          }),
+        ]),
+      })
     }
   })
 })

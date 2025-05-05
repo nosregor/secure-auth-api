@@ -50,7 +50,10 @@ describe('POST /api/auth/verify-2fa', () => {
     const res = await request(app).post(endpoint).send({ userId, code: '888888' })
 
     expect(res.status).toBe(401)
-    expect(res.body).toEqual({ message: 'Invalid or expired 2FA code' })
+    expect(res.body).toEqual({
+      status: 'error',
+      message: 'Invalid or expired 2FA code',
+    })
     expect(jwt.signAccessToken).not.toHaveBeenCalled()
     expect(jwt.signRefreshToken).not.toHaveBeenCalled()
   })

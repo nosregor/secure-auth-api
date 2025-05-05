@@ -1,8 +1,9 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { AppError } from '../utils/errors'
 import logger from '../utils/logger'
 
-export function errorHandler(err: Error, req: Request, res: Response): void {
+// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+export function errorHandler(err: Error, req: Request, res: Response, next: NextFunction): void {
   const isAppError = err instanceof AppError
 
   const statusCode = isAppError ? err.statusCode : 500
@@ -13,6 +14,11 @@ export function errorHandler(err: Error, req: Request, res: Response): void {
   res.status(statusCode).json({
     status: 'error',
     message,
-    ...(process.env.NODE_ENV !== 'production' && { stack: err.stack }),
+    ...(isAppError &&
+      typeof err.errors === 'object' &&
+      err.errors !== null && { errors: err.errors }),
+    ...(process.env.NODE_ENV === 'development' && {
+      stack: err.stack,
+    }),
   })
 }
