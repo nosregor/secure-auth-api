@@ -7,7 +7,7 @@ import {
   storeCode,
   verifyCode,
 } from '../services/authService'
-import { AppError } from '../utils/errors'
+import { AppError, AuthError, NotFoundError } from '../utils/errors'
 
 export const updateProfile: RequestHandler = async (
   req: Request,
@@ -17,7 +17,7 @@ export const updateProfile: RequestHandler = async (
   try {
     const userId = req.user?.userId
     if (!userId) {
-      throw new AppError('Unauthorized', 401)
+      throw new AuthError('Unauthorized')
     }
 
     const updates = req.body
@@ -40,11 +40,11 @@ export const requestPasswordChange: RequestHandler = async (
   try {
     const userId = req.user?.userId
     if (!userId) {
-      throw new AppError('Unauthorized', 401)
+      throw new AuthError('Unauthorized')
     }
     const user = await User.findById(userId)
     if (!user) {
-      throw new AppError('User not found', 404)
+      throw new NotFoundError('User not found')
     }
 
     const code = generateVerificationCode()
@@ -65,13 +65,13 @@ export const changePassword: RequestHandler = async (
   try {
     const userId = req.user?.userId
     if (!userId) {
-      throw new AppError('Unauthorized', 401)
+      throw new AuthError('Unauthorized')
     }
     const { code, newPassword } = req.body
 
     const isValid = await verifyCode(userId, code)
     if (!isValid) {
-      throw new AppError('Invalid or expired code', 401)
+      throw new AuthError('Invalid or expired code')
     }
 
     await User.findByIdAndUpdate(userId, { password: newPassword })

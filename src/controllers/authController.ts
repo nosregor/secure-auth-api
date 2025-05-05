@@ -7,7 +7,7 @@ import {
   verifyCode,
 } from '../services/authService'
 import { setRefreshTokenCookie } from '../utils/auth'
-import { AppError } from '../utils/errors'
+import { AuthError, ForbiddenError, ValidationError } from '../utils/errors'
 import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../utils/jwt'
 
 export const register: RequestHandler = async (
@@ -22,7 +22,7 @@ export const register: RequestHandler = async (
 
     if (existingUser) {
       if (existingUser) {
-        throw new AppError('Email or mobile already in use', 400)
+        throw new ValidationError(undefined, 'Email or mobile already in use')
       }
     }
 
@@ -39,7 +39,7 @@ export const login: RequestHandler = async (req: Request, res: Response, next: N
     const user = await User.findOne({ email })
 
     if (!user || !user.comparePassword(password)) {
-      throw new AppError('Invalid credentials', 401)
+      throw new AuthError('Invalid credentials')
     }
 
     const code = generateVerificationCode()
@@ -62,7 +62,7 @@ export const verify2FA: RequestHandler = async (
     const isValid = await verifyCode(userId, code)
 
     if (!isValid) {
-      throw new AppError('Invalid or expired 2FA code', 401)
+      throw new AuthError('Invalid or expired 2FA code')
     }
 
     const accessToken = signAccessToken({ userId })
@@ -79,12 +79,12 @@ export const refreshAccessToken = async (req: Request, res: Response, next: Next
   try {
     const { refreshToken } = req.cookies
     if (!refreshToken) {
-      throw new AppError('Missing refresh token', 401)
+      throw new AuthError('Missing refresh token')
     }
 
     const decoded = verifyRefreshToken(refreshToken) as { userId: string }
     if (!decoded?.userId) {
-      throw new AppError('Invalid refresh token', 403)
+      throw new ForbiddenError('Invalid refresh token')
     }
 
     const newAccessToken = signAccessToken({ userId: decoded.userId })

@@ -16,8 +16,20 @@ export class AppError extends Error {
 }
 
 export class ValidationError extends AppError {
-  constructor(message: string = 'Validation failed') {
-    super(message, 400)
+  constructor(errors?: unknown, message = 'Validation failed') {
+    super(message, 400, errors)
+  }
+}
+
+export class AuthError extends AppError {
+  constructor(message = 'Unauthorized') {
+    super(message, 401)
+  }
+}
+
+export class ForbiddenError extends AppError {
+  constructor(message = 'Forbidden') {
+    super(message, 403)
   }
 }
 
