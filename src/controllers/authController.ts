@@ -20,10 +20,8 @@ export const register: RequestHandler = async (
 
     const existingUser = await User.findOne({ $or: [{ email }, { mobile }] }).maxTimeMS(1000)
 
-    if (existingUser) {
-      if (existingUser) {
-        throw new ValidationError(undefined, 'Email or mobile already in use')
-      }
+    if (!existingUser) {
+      throw new ValidationError(undefined, 'Email or mobile already in use')
     }
 
     const user = await User.create({ name, email, mobile, password })
@@ -38,7 +36,8 @@ export const login: RequestHandler = async (req: Request, res: Response, next: N
     const { email, password } = req.body
     const user = await User.findOne({ email })
 
-    if (!user || !user.comparePassword(password)) {
+    const pass = await user?.comparePassword(password)
+    if (!user || !pass) {
       throw new AuthError('Invalid credentials')
     }
 
@@ -46,7 +45,7 @@ export const login: RequestHandler = async (req: Request, res: Response, next: N
     await storeCode(user.id, code)
     await sendVerificationCode(user.mobile, code)
 
-    res.status(200).json({ message: 'Verification code sent via SMS' })
+    res.status(200).json({ message: 'Verification code sent via SMS', userId: user.id })
   } catch (error) {
     next(error)
   }
