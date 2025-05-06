@@ -17,7 +17,7 @@ router.post(
   validateSchema(requestPasswordChangeSchema),
   requestPasswordChange,
 )
-router.post(
+router.patch(
   '/change-password',
   isAuthenticated,
   validateSchema(changePasswordRequestSchema),

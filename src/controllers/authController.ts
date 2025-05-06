@@ -18,7 +18,7 @@ export const register: RequestHandler = async (
   try {
     const { name, email, mobile, password } = req.body
 
-    const existingUser = await User.findOne({ $or: [{ email }, { mobile }] })
+    const existingUser = await User.findOne({ $or: [{ email }, { mobile }] }).maxTimeMS(1000)
 
     if (existingUser) {
       if (existingUser) {

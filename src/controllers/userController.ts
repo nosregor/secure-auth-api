@@ -51,7 +51,7 @@ export const requestPasswordChange: RequestHandler = async (
     await storeCode(user.id, code)
     await sendVerificationCode(user.mobile, code)
 
-    res.status(200).json({ message: 'Verification code sent', code })
+    res.status(200).json({ message: 'Verification code sent' })
   } catch (error) {
     next(error)
   }
@@ -74,7 +74,7 @@ export const changePassword: RequestHandler = async (
       throw new AuthError('Invalid or expired code')
     }
 
-    await User.findByIdAndUpdate(userId, { password: newPassword })
+    await User.findByIdAndUpdate(userId, { $set: { password: newPassword } })
     res.status(200).json({ message: 'Password updated successfully' })
   } catch (error) {
     next(error)

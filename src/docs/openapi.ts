@@ -253,7 +253,7 @@ registry.registerPath({
 
 // Change password after verifying code
 registry.registerPath({
-  method: 'post',
+  method: 'patch',
   path: '/api/users/change-password',
   summary: 'Change user password after verifying code',
   description:
@@ -286,10 +286,9 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'post',
-  path: '/api/auth//refresh-token',
+  path: '/api/auth/refresh-token',
   tags: ['Authentication'],
   description: 'Refresh access token using refresh token cookie',
-  security: [], // No auth needed for this endpoint
   responses: {
     200: {
       description: 'New access token generated',
