@@ -7,7 +7,7 @@ import {
   verifyCode,
 } from '../services/authService'
 import { clearRefreshTokenCookie, setRefreshTokenCookie } from '../utils/auth'
-import { AuthError, ForbiddenError, ValidationError } from '../utils/errors'
+import { AuthError, ForbiddenError, NotFoundError, ValidationError } from '../utils/errors'
 import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../utils/jwt'
 
 export const register: RequestHandler = async (
@@ -57,11 +57,25 @@ export const verify2FA: RequestHandler = async (
   next: NextFunction,
 ) => {
   try {
-    const { userId, code } = req.body
-    const isValid = await verifyCode(userId, code)
+    // Add password verification for extra check
+    const { userId, code, password } = req.body
 
-    if (!isValid) {
+    // 1. Fetch user
+    const user = await User.findById(userId)
+    if (!user) {
+      throw new NotFoundError('User not found')
+    }
+
+    // 2. Verify 2FA code
+    const isCodeValid = await verifyCode(userId, code)
+    if (!isCodeValid) {
       throw new AuthError('Invalid or expired 2FA code')
+    }
+
+    // 3. Verify password
+    const isPasswordValid = await user.comparePassword(password)
+    if (!isPasswordValid) {
+      throw new AuthError('Invalid password')
     }
 
     const accessToken = signAccessToken({ userId })

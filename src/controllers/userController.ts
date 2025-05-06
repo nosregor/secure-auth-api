@@ -67,6 +67,8 @@ export const changePassword: RequestHandler = async (
     if (!userId) {
       throw new AuthError('Unauthorized')
     }
+
+    // TODO: check if old password is equal to the one saved in DB
     const { code, newPassword } = req.body
 
     const isValid = await verifyCode(userId, code)
