@@ -6,7 +6,7 @@ import {
   storeCode,
   verifyCode,
 } from '../services/authService'
-import { setRefreshTokenCookie } from '../utils/auth'
+import { clearRefreshTokenCookie, setRefreshTokenCookie } from '../utils/auth'
 import { AuthError, ForbiddenError, ValidationError } from '../utils/errors'
 import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../utils/jwt'
 
@@ -79,11 +79,13 @@ export const refreshAccessToken = async (req: Request, res: Response, next: Next
   try {
     const { refreshToken } = req.cookies
     if (!refreshToken) {
+      clearRefreshTokenCookie(res)
       throw new AuthError('Missing refresh token')
     }
 
     const decoded = verifyRefreshToken(refreshToken) as { userId: string }
     if (!decoded?.userId) {
+      clearRefreshTokenCookie(res)
       throw new ForbiddenError('Invalid refresh token')
     }
 
