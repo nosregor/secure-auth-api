@@ -29,7 +29,7 @@ describe('POST /api/users/change-password', () => {
 
   it('should return 401 if user is not authenticated', async () => {
     const res = await request(app)
-      .post(endpoint)
+      .patch(endpoint)
       .send({ code: mockCode, newPassword: mockPassword })
 
     expect(res.status).toBe(401)
@@ -40,7 +40,7 @@ describe('POST /api/users/change-password', () => {
     ;(verifyCode as jest.Mock).mockResolvedValue(false)
 
     const res = await request(app)
-      .post(endpoint)
+      .patch(endpoint)
       .set('Authorization', `Bearer ${token}`)
       .send({ code: '999999', newPassword: mockPassword })
 
@@ -54,14 +54,14 @@ describe('POST /api/users/change-password', () => {
     ;(User.findByIdAndUpdate as jest.Mock).mockResolvedValueOnce({})
 
     const res = await request(app)
-      .post(endpoint)
+      .patch(endpoint)
       .set('Authorization', `Bearer ${token}`)
       .send({ code: mockCode, newPassword: mockPassword })
 
     expect(res.status).toBe(200)
     expect(res.body.message).toBe('Password updated successfully')
     expect(User.findByIdAndUpdate).toHaveBeenCalledWith(userId, {
-      password: mockPassword,
+      $set: { password: mockPassword },
     })
   })
 })

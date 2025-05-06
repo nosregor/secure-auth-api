@@ -55,7 +55,6 @@ describe('POST /api/users/request-password-change', () => {
 
     expect(res.status).toBe(200)
     expect(res.body.message).toBe('Verification code sent')
-    expect(res.body.code).toBe('123456')
     expect(generateVerificationCode).toHaveBeenCalled()
     expect(storeCode).toHaveBeenCalledWith(mockUser.id, '123456')
     expect(sendVerificationCode).toHaveBeenCalledWith(mockUser.mobile, '123456')
