@@ -1,4 +1,4 @@
-# 🛡️ Bling Backend Coding Challenge — Secure Auth API
+# 🛡️ Secure Backend Auth API
 
 A secure backend authentication API built with **Express.js** and **TypeScript**, featuring:
 
@@ -88,7 +88,7 @@ It includes:
 | Session hijacking          | ✅            | Refresh token rotation with invalidation of old token              |
 | Brute-force login attempts | ❌            | Rate limiting planned (e.g., `express-rate-limit`)                 |
 | Mobile number change       | 🚫            | Not allowed to prevent account takeovers                           |
-| Refresh token persistence  | ✅ (optional) | Stored as HTTP-only secure cookie (optional in this challenge)     |
+| Refresh token persistence  | ✅ (optional) | Stored as HTTP-only secure cookie                                  |
 
 ## 🔄 Token Strategy
 
@@ -97,7 +97,7 @@ It includes:
   - Short-lived (e.g., 15 min)
   - Sent in Authorization header for protected routes
 
-- Refresh Token (optional for this challenge):
+- Refresh Token:
   - Stored in HTTP-only cookie and valid for 7 days
   - Issued on 2FA success and replaced on every login to invalidate older sessions
   - Enables access token renewal without re-authenticating every time
