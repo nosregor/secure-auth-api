@@ -33,7 +33,7 @@ Create a `.env` file based on `.env.example`:
 ```env
 NODE_ENV=development
 PORT=3000
-MONGO_URL=mongodb://localhost:27017/bling_auth
+MONGO_URL=mongodb://localhost:27017/secure-auth
 JWT_SECRET=supersecret
 REFRESH_SECRET=supersecretjwtkey
 REDIS_URL=redis://localhost:6379

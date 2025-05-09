@@ -1,16 +1,12 @@
 import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi'
 import { z } from 'zod'
-import { emailSchema } from '../shared/baseSchema'
+import { emailSchema, passwordSchema } from '../shared/baseSchema'
 
 extendZodWithOpenApi(z)
 export const loginSchema = z
   .object({
     email: emailSchema,
-    password: z
-      .string({
-        required_error: 'Password is required',
-      })
-      .min(1, 'Password is required'),
+    password: passwordSchema,
   })
   .strict()
   .openapi('Login')

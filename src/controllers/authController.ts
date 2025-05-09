@@ -16,11 +16,12 @@ export const register: RequestHandler = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
+    console.log(req.body)
     const { name, email, mobile, password } = req.body
 
-    const existingUser = await User.findOne({ $or: [{ email }, { mobile }] }).maxTimeMS(1000)
-
-    if (!existingUser) {
+    const existingUser = await User.findOne({ $or: [{ email }, { mobile }] })
+    console.log(existingUser)
+    if (existingUser) {
       throw new ValidationError(undefined, 'Email or mobile already in use')
     }
 
