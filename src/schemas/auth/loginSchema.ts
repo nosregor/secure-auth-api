@@ -20,10 +20,3 @@ export const loginResponseSchema = z
   .openapi('LoginResponse')
 
 export type LoginInput = z.infer<typeof loginSchema>
-
-// export const loginSchema = userSchema.pick({
-//   email: true,
-//   password: true
-// }).extend({
-//   password: z.string().min(1) // Override to remove complexity checks
-// })

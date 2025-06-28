@@ -73,11 +73,11 @@ export const verify2FA: RequestHandler = async (
       throw new AuthError('Invalid or expired 2FA code')
     }
 
-    // 3. Verify password
-    const isPasswordValid = await user.comparePassword(password)
-    if (!isPasswordValid) {
-      throw new AuthError('Invalid password')
-    }
+    // 3. Verify password ( optional)
+    // const isPasswordValid = await user.comparePassword(password)
+    // if (!isPasswordValid) {
+    //   throw new AuthError('Invalid password')
+    // }
 
     const accessToken = signAccessToken({ userId })
     const refreshToken = signRefreshToken({ userId })

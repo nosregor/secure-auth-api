@@ -1,6 +1,5 @@
 import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi'
 import { z } from 'zod'
-import { passwordSchema } from '../shared/baseSchema'
 
 extendZodWithOpenApi(z)
 
@@ -27,7 +26,7 @@ export const verify2FASchema = z
         example: '123456',
         description: '6-digit verification code received via SMS/email',
       }),
-    password: passwordSchema,
+    // password: passwordSchema,
   })
   .strict()
   .openapi('Verify2FA')
